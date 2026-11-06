@@ -13,10 +13,10 @@
       "sha256": "fd7b19842b2d465149051f091f2e80fdec08f200e4ff90bf0ac169e8ab207b23"
     },
     "resources.zip": {
-      "size": 10768158,
-      "sha256": "bd686b67a9775ea73b1290706770a43bcbcc171be8923ce14a5fc0b0b67d4164"
+      "size": 10807431,
+      "sha256": "4a72d4d6d59b9de481c3d3b760d3e9767e76b27bbcee9f42ae574d510c66fc9f"
     }
   },
-  "resource_count": 506,
-  "resource_bytes": 42322428
+  "resource_count": 513,
+  "resource_bytes": 42393088
 }
