@@ -1,32 +1,32 @@
 # DESLab
 
-Biblioteca Python para sistemas a eventos discretos modelados por autômatos, com operações de linguagens, controle supervisório, diagnóstico e opacidade.
+A Python library for discrete event systems modeled as automata, with language operations, supervisory control, diagnosis, and opacity analysis.
 
-## Instalação
+## Installation
 
-Use Python 3.11 ou superior. Instale a partir da pasta do repositório.
+Use Python 3.11 or later. Run the installation command from the repository directory.
 
-No Windows, você pode usar o [instalador do Python 3.12](programas/python-3.12.0-amd64.exe) disponível em `programas`. Marque **Add Python to PATH** durante a instalação e abra um novo terminal. Se o comando `python` não for reconhecido, veja [como configurar o PATH](#configurar-o-path-no-windows). Depois, execute na pasta do repositório:
+On Windows, you can use the [Python 3.12 installer](programas/python-3.12.0-amd64.exe) in `programas`. Select **Add Python to PATH** during installation and open a new terminal. If the `python` command is not recognized, see [how to configure PATH](#configure-path-on-windows). Then run this command from the repository directory:
 
 ```bat
 python -m pip install .
 ```
 
-No macOS ou Linux:
+On macOS or Linux:
 
 ```sh
 python3 -m pip install .
 ```
 
-Se recebeu um arquivo `.whl`, substitua `.` pelo caminho do arquivo nos comandos acima. Use o mesmo Python dos seus scripts ou notebooks. As dependências necessárias para os cálculos e a geração de PDFs são instaladas automaticamente.
+If you received a `.whl` file, replace `.` with its path in the commands above. Use the same Python installation as your scripts or notebooks. The dependencies needed for calculations and PDF generation are installed automatically.
 
-Para Python 3.8, 3.9 ou 3.10, siga a seção [Compatibilidade com Python antigo e estrutura anterior](#compatibilidade-com-python-antigo-e-estrutura-anterior) antes de executar os exemplos.
+For Python 3.8, 3.9, or 3.10, follow [Compatibility with older Python versions and the previous setup](#compatibility-with-older-python-versions-and-the-previous-setup) before running the examples.
 
-## Exemplos
+## Examples
 
-### Criar e desenhar um autômato
+### Create and draw an automaton
 
-Este exemplo define três estados, três eventos, um estado inicial e dois estados marcados. A tabela associa os estados e eventos aos rótulos exibidos no desenho.
+This example defines three states, three events, one initial state, and two marked states. The table maps states and events to the labels displayed in the drawing.
 
 ```python
 from deslab import *
@@ -53,67 +53,67 @@ G1 = fsa(X, Sigma, T, X0, Xm, table, name='$G_1$ -- example 1')
 draw(G1)
 ```
 
-### Salvar o PDF
+### Save the PDF
 
-Usando o mesmo autômato, salve uma versão colorida sem abrir o visualizador:
+Using the same automaton, save a color version without opening the PDF viewer:
 
 ```python
 draw(G1, 'figurecolor', output='G1.pdf', show=False)
 ```
 
-`output` define onde salvar o PDF. Por padrão, `draw()` abre o arquivo gerado. Os estilos disponíveis são `figure`, `figurecolor` e `beamer`. Use `save_file=True` para salvar também o arquivo `Figure.tex`.
+`output` sets the PDF destination. By default, `draw()` opens the generated file. Available styles are `figure`, `figurecolor`, and `beamer`. Use `save_file=True` to also save the `Figure.tex` file.
 
-## Compatibilidade com Python antigo e estrutura anterior
+## Compatibility with older Python versions and the previous setup
 
-Use esta seção somente se estiver usando Python 3.8, 3.9 ou 3.10, ou se quiser usar as engines nativas de renderização, como nas versões anteriores do DESLab.
+Use this section only if you are running Python 3.8, 3.9, or 3.10, or if you want to use native rendering engines as in earlier DESLab versions.
 
-Com Python 3.11 ou superior, a renderização padrão de `draw()` já inclui as dependências necessárias. Basta seguir a instalação e os exemplos acima.
+With Python 3.11 or later, the default rendering mode of `draw()` already includes the required dependencies. Follow the installation instructions and examples above.
 
-Para usar a renderização nativa, instale Graphviz e TeX Live conforme seu sistema:
+To use native rendering, install Graphviz and TeX Live for your operating system:
 
 ### Windows
 
-Use os instaladores que já estão na pasta `programas`:
+Use the installers in the `programas` directory:
 
-1. Instale o [Graphviz 2.28](programas/graphviz-2.28.0.msi).
-2. Instale o [TeX Live](programas/TEXLIVE-install-tl-windows.exe), mantendo a seleção completa de pacotes do instalador.
-3. Siga as instruções de [configuração do PATH](#configurar-o-path-no-windows) para adicionar as pastas do Graphviz e do TeX Live.
+1. Install [Graphviz 2.28](programas/graphviz-2.28.0.msi).
+2. Install [TeX Live](programas/TEXLIVE-install-tl-windows.exe), keeping the installer's full package selection.
+3. Follow the [PATH configuration instructions](#configure-path-on-windows) to add the Graphviz and TeX Live directories.
 
 ### macOS
 
-Com o [Homebrew](https://brew.sh/) instalado:
+With [Homebrew](https://brew.sh/) installed:
 
 ```sh
 brew install graphviz
 brew install --cask basictex
 ```
 
-Feche e reabra o terminal. Depois, instale os pacotes LaTeX necessários:
+Close and reopen the terminal. Then install the required LaTeX packages:
 
 ```sh
 sudo tlmgr update --self
 sudo tlmgr install beamer pgf lm
 ```
 
-### Linux — Ubuntu e Debian
+### Linux — Ubuntu and Debian
 
 ```sh
 sudo apt update
 sudo apt install graphviz texlive-latex-extra texlive-fonts-recommended lmodern
 ```
 
-### Verificar a instalação
+### Verify the installation
 
-Em qualquer sistema, confira se os dois comandos estão disponíveis:
+On any operating system, check that both commands are available:
 
 ```sh
 dot -V
 pdflatex --version
 ```
 
-### Selecionar a renderização de draw()
+### Select the rendering mode for draw()
 
-Antes de desenhar, ative a renderização nativa. A chamada verifica se `dot` e `pdflatex` estão disponíveis no PATH:
+Before drawing, enable native rendering. This call checks that `dot` and `pdflatex` are available on PATH:
 
 ```python
 from deslab import use_native_draw
@@ -122,7 +122,7 @@ use_native_draw()
 draw(G1, 'figure', output='G1.pdf', show=False)
 ```
 
-Para voltar à renderização padrão, com Python 3.11 ou superior:
+To return to default rendering on Python 3.11 or later:
 
 ```python
 from deslab import use_default_draw
@@ -130,32 +130,32 @@ from deslab import use_default_draw
 use_default_draw()
 ```
 
-A escolha vale para as próximas chamadas de `draw()` na mesma execução.
+The selected mode applies to subsequent `draw()` calls in the same Python session.
 
-## Configurar o PATH no Windows
+## Configure PATH on Windows
 
-O PATH permite executar os programas pelo nome no terminal, sem informar o caminho completo.
+PATH lets you run programs by name in the terminal without entering their full paths.
 
-1. Abra o **Painel de Controle → Sistema → Configurações avançadas do sistema**.
-2. Na aba **Avançado**, clique em **Variáveis de Ambiente**.
-3. Em **Variáveis de usuário**, selecione **Path** e clique em **Editar**.
-4. Clique em **Novo** e adicione a pasta de cada programa necessário, uma por entrada, preservando as entradas existentes:
+1. Open **Control Panel → System → Advanced system settings**.
+2. In the **Advanced** tab, click **Environment Variables**.
+3. Under **User variables**, select **Path** and click **Edit**.
+4. Click **New** and add the directory for each required program, one per entry, keeping the existing entries:
 
-| Programa | Pasta a adicionar |
+| Program | Directory to add |
 | --- | --- |
-| Python | A pasta que contém `python.exe`, por exemplo, `C:\Users\SeuUsuario\AppData\Local\Programs\Python\Python312\`. |
-| Graphviz | A pasta `bin` que contém `dot.exe`, por exemplo, `C:\Program Files (x86)\Graphviz2.28\bin\`. |
-| TeX Live | A pasta que contém `pdflatex.exe`, dentro de `C:\texlive\<ano>\bin\`. Dependendo da versão instalada, a subpasta pode se chamar `windows` ou `win32`. |
+| Python | The directory containing `python.exe`, for example, `C:\Users\YourUser\AppData\Local\Programs\Python\Python312\`. |
+| Graphviz | The `bin` directory containing `dot.exe`, for example, `C:\Program Files (x86)\Graphviz2.28\bin\`. |
+| TeX Live | The directory containing `pdflatex.exe` under `C:\texlive\<year>\bin\`. Depending on the installed version, the subdirectory may be named `windows` or `win32`. |
 
-Os caminhos variam conforme a instalação. Adicione a **pasta**, sem o nome do executável: `C:\...\Python312\`, e não `C:\...\Python312\python.exe`.
+Paths depend on your installation. Add the **directory**, without the executable name: `C:\...\Python312\`, rather than `C:\...\Python312\python.exe`.
 
-Na instalação padrão, basta configurar o Python. Graphviz e TeX Live só precisam estar no PATH se você escolher a renderização nativa.
+For the default installation, only Python needs to be on PATH. Graphviz and TeX Live are needed on PATH only if you choose native rendering.
 
-Confirme as janelas com **OK** e feche e reabra o terminal ou o programa em que executa seus scripts. Confira o Python selecionado:
+Click **OK** to confirm the changes, then close and reopen the terminal or application where you run your scripts. Check the selected Python installation:
 
 ```bat
 python --version
 where python
 ```
 
-Se houver mais de uma versão do Python no PATH, coloque a pasta da versão que deseja usar antes das outras entradas de Python.
+If PATH contains more than one Python version, place the directory of the version you want to use before the other Python entries.
