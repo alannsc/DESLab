@@ -4,19 +4,21 @@ Biblioteca Python para sistemas a eventos discretos modelados por autômatos, co
 
 ## Instalação
 
-Use Python 3.8 ou superior. Na pasta do repositório, execute:
+Use Python 3.8 ou superior. Instale a partir da pasta do repositório.
+
+No macOS ou Linux:
 
 ```sh
+python3 -m pip install .
+```
+
+No Windows:
+
+```bat
 python -m pip install .
 ```
 
-Se recebeu um arquivo `.whl`, instale o arquivo recebido:
-
-```sh
-python -m pip install caminho/arquivo.whl
-```
-
-Execute a instalação com o mesmo Python usado pelos seus scripts ou notebooks. As dependências Python são instaladas automaticamente.
+Se recebeu um arquivo `.whl`, substitua `.` pelo caminho do arquivo nos comandos acima. Use o mesmo Python dos seus scripts ou notebooks. As dependências Python são instaladas automaticamente.
 
 Para gerar PDFs, instale também Graphviz e LaTeX conforme seu sistema.
 
