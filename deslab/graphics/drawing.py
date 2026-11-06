@@ -19,8 +19,15 @@ import tempfile
 from deslab.graphics.config import (
     _render_lock, get_draw_mode, use_native_draw, use_default_draw,
 )
+from deslab.graphics.portable_tex import compile_pdf as _compile_portable_pdf
 from deslab.graphics.working.dot2tex_deslab import convert_graph as latex_code
 import warnings
+
+# Native rendering and older Python versions do not require this dependency.
+try:
+    import wasi_graphviz as _portable_graphviz
+except ImportError:
+    _portable_graphviz = None
 
 VIEWERS             = {'evince':'evince', 'acrobat reader':'acroread'}
 VIEWER              = VIEWERS['evince']
@@ -707,14 +714,13 @@ def automaton2tikfig(automaton):
         except CalledProcessError as error:
             raise deslabError('I could not create a tex file of the automaton object') from error
     else:
-        try:
-            from wasi_graphviz import render, WasiGraphvizError
-        except ImportError as error:
+        if _portable_graphviz is None:
             raise deslabError('Portable drawing requires Python 3.11+ and the dependencies '
-                              'installed with DESlab. Reinstall DESlab or use_native_draw().') from error
+                              'installed with DESlab. Reinstall DESlab or use_native_draw().')
         try:
-            xdot = render(Path(file).read_text(), format='xdot', engine=program, backend='wasmtime')
-        except WasiGraphvizError as error:
+            xdot = _portable_graphviz.render(Path(file).read_text(), format='xdot',
+                                            engine=program, backend='wasmtime')
+        except _portable_graphviz.WasiGraphvizError as error:
             raise deslabError('Portable Graphviz could not render this automaton: ' + str(error)) from error
     # Use the original converter and options inside the active Python environment.
     fig_texcode = latex_code(xdot.decode('utf-8'), format='tikz', codeonly=True, texmode='math')
@@ -731,9 +737,8 @@ def tex2pdf(tex_filename) :
     window_counter += 1    
     pdf_outputname = 'Figure-'+str(window_counter)+str(fig_counter)
     if get_draw_mode() == 'default':
-        from deslab.graphics.portable_tex import compile_pdf
-        compile_pdf(Path(dir_path[WORKING]) / tex_filename,
-                    Path(dir_path[OUTPUT]) / (pdf_outputname + '.pdf'))
+        _compile_portable_pdf(Path(dir_path[WORKING]) / tex_filename,
+                              Path(dir_path[OUTPUT]) / (pdf_outputname + '.pdf'))
         return pdf_outputname + '.pdf'
     command = ['pdflatex', '-interaction=batchmode', '-halt-on-error', '-no-shell-escape',
                '-output-directory', dir_path[OUTPUT], '-jobname', pdf_outputname, tex_filename]
@@ -750,6 +755,7 @@ def tex2pdf(tex_filename) :
     
    
 def automaton2page(automaton, style):     
+    # fsa imports graphic from this module, so defer this import to avoid a cycle.
     from deslab.src.automatadefs import fsa   
    
     graphic = automaton.graphic
@@ -902,6 +908,7 @@ def draw(*automatavars, save_file=False, output=None, show=True):
 
 
 def _draw_document(automatavars, save_file):
+    # fsa imports graphic from this module, so defer this import to avoid a cycle.
     from deslab.src.automatadefs import fsa
     global fig_counter 
     
