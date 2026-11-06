@@ -4,6 +4,6 @@ from setuptools import setup
 
 
 if __name__ == "__main__":
-    # The original repository tracks build/; use a separate cache so pip cannot
-    # include stale copies of modules from that directory.
+    # Keep build output separate from the tracked build/ directory so pip
+    # cannot include stale copies of modules.
     setup(options={"build": {"build_base": ".deslab-build"}})
