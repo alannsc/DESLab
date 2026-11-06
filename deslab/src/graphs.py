@@ -6,6 +6,7 @@
 import networkx as nx
 from networkx import MultiDiGraph, DiGraph
 from deslab.src.automatadefs import fsa
+from deslab.src.exceptions import invalidArgument
 
 
 def strconncomps(G):  
@@ -24,15 +25,13 @@ def strconncomps(G):
 def selfloopnodes(G):
     """ This function looks for nodes with self loops in the graph of 
     automaton G """    
-    if isinstance(G, MultiDiGraph): 
-        selfloopnodes = G.nodes_with_selfloops() 
-    elif isinstance(G, DiGraph): 
-        selfloopnodes = G.nodes_with_selfloops() 
-    elif isinstance(G, fsa):  
-        selfloopnodes = G.Graph.nodes_with_selfloops()   
+    if isinstance(G, fsa):
+        graph = G.Graph
+    elif isinstance(G, (MultiDiGraph, DiGraph)):
+        graph = G
     else:
         raise invalidArgument('G must be an automaton or a graph')
-    return selfloopnodes
+    return nx.nodes_with_selfloops(graph)
 
 def condensation(G):
     """ Returns the condensation graph corresponding to the

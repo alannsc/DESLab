@@ -28,9 +28,9 @@ def save(self, filename='default',path=None,tmx=False):
 
     if filename == 'default':
         filename = self.name
-
+    filename = os.fspath(filename)
     if path:
-        filename = path+"\\"+filename
+        filename = os.path.join(os.fspath(path), filename)
         
     if not tmx:
         name , ext = os.path.splitext(filename)
@@ -55,8 +55,9 @@ def save(self, filename='default',path=None,tmx=False):
 
 
 def load(filename,path=None):
+    filename = os.fspath(filename)
     if path:
-        filename=path+r"\\"+filename
+        filename = os.path.join(os.fspath(path), filename)
         
     path , ext = os.path.splitext(filename)
     if ext == '':

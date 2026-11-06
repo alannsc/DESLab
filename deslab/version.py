@@ -36,5 +36,5 @@ Using
 #    Joao Carlos Basilio <basilio@poli.ufrj.br>
 #    BSD license.
 
-__version__ = "nova"#"0.0.3dev2"
+__version__ = "0.0.5.dev0"
 __author__= "Leonardo Clavijo, Daniel Ramos Garcia, Joao Carlos Basilio, Lilian Kawakami"

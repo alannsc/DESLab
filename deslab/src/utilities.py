@@ -6,6 +6,7 @@
 
 from deslab.src.def_const import *
 from itertools import chain
+from shutil import which as _find_executable
 
 ## we should improve this definition by defining a class for languages and sequences
    
@@ -29,17 +30,4 @@ def which(program):
     Determines if the current program is an executable file
     """    
 
-    def is_exe(fpath):
-        return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
-
-    fpath, fname = os.path.split(program)
-    if fpath:
-        if is_exe(program):
-            return program
-    else:
-        for path in os.environ["PATH"].split(os.pathsep):
-            exe_file = os.path.join(path, program)
-            if is_exe(exe_file):
-                return exe_file
-
-    return None
+    return _find_executable(program)

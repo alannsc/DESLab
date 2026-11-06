@@ -13,6 +13,10 @@ import re
 from subprocess import call, check_call, check_output, CalledProcessError
 import os, sys
 import inspect
+from pathlib import Path
+import shutil
+import tempfile
+import threading
 from deslab.graphics.working.dot2tex_deslab import convert_graph as latex_code
 import warnings
 
@@ -28,6 +32,8 @@ OUTPUT              =  'output'
 TEXFILES            =  'texfiles'
 patternDim =re.compile(r'\\node \(\w\d+\) at \((?P<coordX>\d+\.?\d*)pt,(?P<coordY>\d+\.?\d*)pt\)')
 dir_path = {WORKING:'', OUTPUT:'',TEXFILES:''}
+_draw_lock = threading.RLock()
+_helper_workspace = None
 
 
 # CLASS for graphic options
@@ -587,15 +593,17 @@ def create_digraph(self) :
 
 
 
-def setupdir():    
-    """This function recover the absolute path of the user and 
-    set the basic directories for drawing"""
-    path_drawing       = inspect.currentframe().f_code.co_filename
-    graphics_path      = os.path.dirname(path_drawing)    
-    dir_path[WORKING]  = os.path.join(graphics_path, WORKING)
-    dir_path[OUTPUT]   = os.path.join(graphics_path, OUTPUT)
-    dir_path[TEXFILES] = os.path.join(graphics_path, TEXFILES)    
-    return
+def setupdir(workspace=None):
+    """Create writable drawing directories outside the installed package."""
+    global _helper_workspace
+    if workspace is None:
+        if _helper_workspace is None:
+            _helper_workspace = tempfile.TemporaryDirectory(prefix='deslab-helpers-')
+        workspace = _helper_workspace.name
+    for key in (WORKING, OUTPUT, TEXFILES):
+        directory = Path(workspace).resolve() / key
+        directory.mkdir(parents=True, exist_ok=True)
+        dir_path[key] = str(directory)
 
 def adjust_label_dot(filename):
     with open(filename, 'r') as file:
@@ -688,11 +696,19 @@ def automaton2tikfig(automaton):
     fileObj.write(auto_dotfile)
     fileObj.close()
     adjust_label_dot(file)
-    command = '%s -Txdot %s | '%(program, DOTINTERFACE) + 'python dot2tex_deslab.py -ftikz --codeonly --texmode math'
+    command = [program, '-Txdot', file]
     try:
-        fig_texcode = check_output(command,shell=True, cwd = dir_path[WORKING], stderr=subprocess.PIPE)
-    except CalledProcessError:
-        raise deslabError('I could not create a tex file of the automaton object')
+        xdot = check_output(command, cwd=dir_path[WORKING], stderr=subprocess.PIPE)
+    except FileNotFoundError as error:
+        raise deslabError('Graphviz was not found. Install Graphviz to use the native drawing backend.') from error
+    except CalledProcessError as error:
+        raise deslabError('I could not create a tex file of the automaton object') from error
+    # Use the original converter and options inside the active Python environment.
+    fig_texcode = latex_code(xdot.decode('utf-8'), format='tikz', codeonly=True, texmode='math')
+    if not isinstance(fig_texcode, str):
+        raise deslabError('The Graphviz output could not be converted to TikZ')
+    # The original CLI prints the result, adding one trailing newline.
+    fig_texcode = (fig_texcode + '\n').encode('utf-8')
         
     return fig_texcode
 
@@ -701,12 +717,16 @@ def tex2pdf(tex_filename) :
     global window_counter
     window_counter += 1    
     pdf_outputname = 'Figure-'+str(window_counter)+str(fig_counter)
-    command = 'pdflatex'+' '+'-interaction=batchmode'+ ' ' + '-no-shell-escape'
-    command = command +' ' +'-output-directory'+' '+dir_path[OUTPUT]+' '+'-jobname'+' '+ pdf_outputname +' '+tex_filename
+    command = ['pdflatex', '-interaction=batchmode', '-halt-on-error', '-no-shell-escape',
+               '-output-directory', dir_path[OUTPUT], '-jobname', pdf_outputname, tex_filename]
     try:
-        retcode = check_call(command,shell=True, cwd = dir_path[WORKING])  
-    except CalledProcessError:
-        raise deslabError("There is a trouble with the generation of the pdf file. Check pdflatex installation")
+        check_call(command, cwd=dir_path[WORKING])
+    except FileNotFoundError as error:
+        raise deslabError('pdflatex was not found. A LaTeX distribution is required for PDF export.') from error
+    except CalledProcessError as error:
+        log_file = Path(dir_path[OUTPUT]) / (pdf_outputname + '.log')
+        details = log_file.read_text(errors='replace')[-2500:] if log_file.exists() else ''
+        raise deslabError('PDF generation failed. Check pdflatex and the required LaTeX packages.\n' + details) from error
     return pdf_outputname+'.pdf'
      
     
@@ -817,25 +837,53 @@ def openviewer(filepdf):
     # absolute path of the output of the pdf
     filepath = os.path.join(dir_path[OUTPUT], filepdf)         
     if sys.platform.startswith('darwin'): # mac system
-        call((VIEWER, filepath))
+        call(('open', filepath))
     elif os.name == 'nt': # Windows system
         os.startfile(filepath)        
     elif os.name == 'posix': # Linux    
-        command = VIEWER+' '+filepath+'&'
         try:
-            retcode = check_call(command,shell=True,stderr=0)
-        except CalledProcessError:
-            raise deslabError('Fail opening the pdf viewer')
+            subprocess.Popen(['xdg-open', filepath], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        except OSError as error:
+            raise deslabError('Could not open the PDF viewer. Use draw(..., show=False) to export only.') from error
     return  
         
 
 
 
       
-def draw(*automatavars, save_file=False):      
+def draw(*automatavars, save_file=False, output=None, show=True):
+    """Export an automaton PDF, optionally opening it with the system viewer.
+
+    ``output`` selects the PDF destination; by default it is saved in the current
+    directory. ``show=False`` supports notebooks, CI and machines without a GUI.
+    The original Graphviz/TikZ/pdfLaTeX renderer and drawing styles are retained.
+    """
+    if not automatavars:
+        raise deslabError('Pass at least one automaton to draw')
+    # The legacy converter and figure counters are shared; serialize draw calls
+    # while isolating every invocation's temporary files and restoring helpers.
+    with _draw_lock, tempfile.TemporaryDirectory(prefix='deslab-draw-') as workspace:
+        previous_paths = dir_path.copy()
+        try:
+            setupdir(workspace)
+            pdf_name = _draw_document(automatavars, save_file)
+            destination = Path(output) if output is not None else Path.cwd() / pdf_name
+            destination = destination.expanduser().resolve()
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            source = Path(dir_path[OUTPUT]) / pdf_name
+            if source.resolve() != destination:
+                shutil.copy2(source, destination)
+            if show:
+                openviewer(str(destination))
+            return str(destination)
+        finally:
+            dir_path.clear()
+            dir_path.update(previous_paths)
+
+
+def _draw_document(automatavars, save_file):
     from deslab.src.automatadefs import fsa
     global fig_counter 
-    setupdir() # we setup the directories in the current operative system 
     
     # the last argument is an fsa then we use the default style
     if isinstance(automatavars[-1], fsa):          
@@ -877,8 +925,7 @@ def draw(*automatavars, save_file=False):
     if save_file:
         write_texfile_here(preamble_tex)
     page_pdf = tex2pdf(TEXPAGEOUT)    
-    openviewer(page_pdf)
-    return 
+    return page_pdf
 
 
 

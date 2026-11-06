@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "DESlab"
+dynamic = ["version"]
+description = "Discrete event systems modeled as automata"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "BSD"}
+authors = [
+  {name = "Leonardo Clavijo, Daniel Ramos Garcia, Joao Carlos Basilio, Lilian Kawakami", email = "deslab@ufrj.br"},
+]
+keywords = ["automata", "discrete event systems", "diagnosis", "supervisory control"]
+dependencies = [
+  "networkx>=2.8.8",
+  "pandas>=2.0.3",
+  "portion>=2.5.0",
+  "pydot>=3.0.1",
+  "pyparsing>=3.1.4",
+]
+
+[tool.setuptools]
+include-package-data = false
+
+[tool.setuptools.packages.find]
+include = ["deslab", "deslab.*"]
+namespaces = false
+
+[tool.setuptools.dynamic]
+version = {attr = "deslab.version.__version__"}

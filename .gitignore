@@ -1,3 +1,4 @@
+.deslab-build/
 __pycache__/
 
 opacidade.py
@@ -19,3 +20,7 @@ Verification_TLBO.py
 *.snm
 *.out
 *.nav
+.venv/
+dist/
+build/
+*.egg-info/

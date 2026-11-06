@@ -37,6 +37,8 @@ Using
 #    BSD license.
 
 
+from deslab.version import __version__
+
 # adding source code
 import deslab.src
 from deslab.src.automatadefs import *
