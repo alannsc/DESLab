@@ -1,5 +1,6 @@
 include README.md pyproject.toml setup.py
 recursive-include deslab *.py
+recursive-include deslab/graphics/_tex_assets *
 prune alan-docs
 prune tests
 prune tools

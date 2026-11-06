@@ -4,7 +4,7 @@ Biblioteca Python para sistemas a eventos discretos modelados por autômatos, co
 
 ## Instalação
 
-Use Python 3.8 ou superior. Instale a partir da pasta do repositório.
+Use Python 3.11 ou superior. Instale a partir da pasta do repositório.
 
 No Windows, você pode usar o [instalador do Python 3.12](programas/python-3.12.0-amd64.exe) disponível em `programas`. Marque **Add Python to PATH** durante a instalação e abra um novo terminal. Se o comando `python` não for reconhecido, veja [como configurar o PATH](#configurar-o-path-no-windows). Depois, execute na pasta do repositório:
 
@@ -18,9 +18,9 @@ No macOS ou Linux:
 python3 -m pip install .
 ```
 
-Se recebeu um arquivo `.whl`, substitua `.` pelo caminho do arquivo nos comandos acima. Use o mesmo Python dos seus scripts ou notebooks. As dependências Python são instaladas automaticamente.
+Se recebeu um arquivo `.whl`, substitua `.` pelo caminho do arquivo nos comandos acima. Use o mesmo Python dos seus scripts ou notebooks. As dependências necessárias para os cálculos e a geração de PDFs são instaladas automaticamente.
 
-Para gerar PDFs, instale também Graphviz e TeX Live conforme as instruções abaixo.
+Para Python 3.8, 3.9 ou 3.10, siga a seção [Compatibilidade com Python antigo e estrutura anterior](#compatibilidade-com-python-antigo-e-estrutura-anterior) antes de executar os exemplos.
 
 ## Exemplos
 
@@ -63,7 +63,13 @@ draw(G1, 'figurecolor', output='G1.pdf', show=False)
 
 `output` define onde salvar o PDF. Por padrão, `draw()` abre o arquivo gerado. Os estilos disponíveis são `figure`, `figurecolor` e `beamer`. Use `save_file=True` para salvar também o arquivo `Figure.tex`.
 
-## Dependências para gerar PDFs
+## Compatibilidade com Python antigo e estrutura anterior
+
+Use esta seção somente se estiver usando Python 3.8, 3.9 ou 3.10, ou se quiser usar as engines nativas de renderização, como nas versões anteriores do DESLab.
+
+Com Python 3.11 ou superior, a renderização padrão de `draw()` já inclui as dependências necessárias. Basta seguir a instalação e os exemplos acima.
+
+Para usar a renderização nativa, instale Graphviz e TeX Live conforme seu sistema:
 
 ### Windows
 
@@ -105,6 +111,27 @@ dot -V
 pdflatex --version
 ```
 
+### Selecionar a renderização de draw()
+
+Antes de desenhar, ative a renderização nativa. A chamada verifica se `dot` e `pdflatex` estão disponíveis no PATH:
+
+```python
+from deslab import use_native_draw
+
+use_native_draw()
+draw(G1, 'figure', output='G1.pdf', show=False)
+```
+
+Para voltar à renderização padrão, com Python 3.11 ou superior:
+
+```python
+from deslab import use_default_draw
+
+use_default_draw()
+```
+
+A escolha vale para as próximas chamadas de `draw()` na mesma execução.
+
 ## Configurar o PATH no Windows
 
 O PATH permite executar os programas pelo nome no terminal, sem informar o caminho completo.
@@ -122,7 +149,7 @@ O PATH permite executar os programas pelo nome no terminal, sem informar o camin
 
 Os caminhos variam conforme a instalação. Adicione a **pasta**, sem o nome do executável: `C:\...\Python312\`, e não `C:\...\Python312\python.exe`.
 
-Para gerar PDFs, configure também o Graphviz e o TeX Live.
+Na instalação padrão, basta configurar o Python. Graphviz e TeX Live só precisam estar no PATH se você escolher a renderização nativa.
 
 Confirme as janelas com **OK** e feche e reabra o terminal ou o programa em que executa seus scripts. Confira o Python selecionado:
 

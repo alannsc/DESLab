@@ -16,7 +16,9 @@ import inspect
 from pathlib import Path
 import shutil
 import tempfile
-import threading
+from deslab.graphics.config import (
+    _render_lock, get_draw_mode, use_native_draw, use_default_draw,
+)
 from deslab.graphics.working.dot2tex_deslab import convert_graph as latex_code
 import warnings
 
@@ -32,7 +34,7 @@ OUTPUT              =  'output'
 TEXFILES            =  'texfiles'
 patternDim =re.compile(r'\\node \(\w\d+\) at \((?P<coordX>\d+\.?\d*)pt,(?P<coordY>\d+\.?\d*)pt\)')
 dir_path = {WORKING:'', OUTPUT:'',TEXFILES:''}
-_draw_lock = threading.RLock()
+_draw_lock = _render_lock
 _helper_workspace = None
 
 
@@ -696,13 +698,24 @@ def automaton2tikfig(automaton):
     fileObj.write(auto_dotfile)
     fileObj.close()
     adjust_label_dot(file)
-    command = [program, '-Txdot', file]
-    try:
-        xdot = check_output(command, cwd=dir_path[WORKING], stderr=subprocess.PIPE)
-    except FileNotFoundError as error:
-        raise deslabError('Graphviz was not found. Install Graphviz to use the native drawing backend.') from error
-    except CalledProcessError as error:
-        raise deslabError('I could not create a tex file of the automaton object') from error
+    if get_draw_mode() == 'native':
+        command = [program, '-Txdot', file]
+        try:
+            xdot = check_output(command, cwd=dir_path[WORKING], stderr=subprocess.PIPE)
+        except FileNotFoundError as error:
+            raise deslabError('Graphviz was not found. Check the native installation on PATH.') from error
+        except CalledProcessError as error:
+            raise deslabError('I could not create a tex file of the automaton object') from error
+    else:
+        try:
+            from wasi_graphviz import render, WasiGraphvizError
+        except ImportError as error:
+            raise deslabError('Portable drawing requires Python 3.11+ and the dependencies '
+                              'installed with DESlab. Reinstall DESlab or use_native_draw().') from error
+        try:
+            xdot = render(Path(file).read_text(), format='xdot', engine=program, backend='wasmtime')
+        except WasiGraphvizError as error:
+            raise deslabError('Portable Graphviz could not render this automaton: ' + str(error)) from error
     # Use the original converter and options inside the active Python environment.
     fig_texcode = latex_code(xdot.decode('utf-8'), format='tikz', codeonly=True, texmode='math')
     if not isinstance(fig_texcode, str):
@@ -717,6 +730,11 @@ def tex2pdf(tex_filename) :
     global window_counter
     window_counter += 1    
     pdf_outputname = 'Figure-'+str(window_counter)+str(fig_counter)
+    if get_draw_mode() == 'default':
+        from deslab.graphics.portable_tex import compile_pdf
+        compile_pdf(Path(dir_path[WORKING]) / tex_filename,
+                    Path(dir_path[OUTPUT]) / (pdf_outputname + '.pdf'))
+        return pdf_outputname + '.pdf'
     command = ['pdflatex', '-interaction=batchmode', '-halt-on-error', '-no-shell-escape',
                '-output-directory', dir_path[OUTPUT], '-jobname', pdf_outputname, tex_filename]
     try:
@@ -856,7 +874,9 @@ def draw(*automatavars, save_file=False, output=None, show=True):
 
     ``output`` selects the PDF destination; by default it is saved in the current
     directory. ``show=False`` supports notebooks, CI and machines without a GUI.
-    The original Graphviz/TikZ/pdfLaTeX renderer and drawing styles are retained.
+    Portable Graphviz and TeX are the default, installed with DESlab. Call
+    ``use_native_draw()`` once to use installed Graphviz and pdfLaTeX instead.
+    ``use_default_draw()`` selects the portable engines again.
     """
     if not automatavars:
         raise deslabError('Pass at least one automaton to draw')

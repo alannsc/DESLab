@@ -2811,7 +2811,6 @@ def main(run_as_module=False,dotdata=None,options=None):
     """Run dot2tex and convert graph
 
     """
-    import platform
     global logstream
     global loghandler
     if not run_as_module:
@@ -2849,7 +2848,7 @@ def main(run_as_module=False,dotdata=None,options=None):
              "  Python: %s \n"
              "  Platform: %s\n"
              "  Pyparsing: %s",
-        sys.version_info, platform.platform(),
+        sys.version_info, sys.platform,
         deslab.graphics.working.dotparsing.pyparsing_version)
     log.info('dot2tex called with: %s' % sys.argv)
     log.info('Program started in %s' % os.getcwd())

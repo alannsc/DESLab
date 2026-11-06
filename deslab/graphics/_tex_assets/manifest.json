@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "host_abi": 2,
+  "engine_source": "https://github.com/mgilbir/tecgonic/tree/b758df17ffa5453b2d2f255f55a6605b80a55a54",
+  "engine_build_ref": "d1a46a5d127ea40c6a1afcb45e91bb3d7c1f5e47",
+  "tex_bundle_source": "https://relay.fullyjustified.net/default_bundle_v33.tar",
+  "tex_bundle_id": "6ffe055852f8faf66c0acbe1a7fb27f87b869a90bad1204f3bf4d9683f597c7c",
+  "auxiliary_source": "https://github.com/mgilbir/tecgonic/blob/b758df17ffa5453b2d2f255f55a6605b80a55a54/testdata/minibundle.tar.gz",
+  "format": "latex.fmt generated with the pinned WASI module from the bundled resources",
+  "files": {
+    "tectonic.wasm": {
+      "size": 5222968,
+      "sha256": "fd7b19842b2d465149051f091f2e80fdec08f200e4ff90bf0ac169e8ab207b23"
+    },
+    "resources.zip": {
+      "size": 10768158,
+      "sha256": "bd686b67a9775ea73b1290706770a43bcbcc171be8923ce14a5fc0b0b67d4164"
+    }
+  },
+  "resource_count": 506,
+  "resource_bytes": 42322428
+}
