@@ -4,7 +4,7 @@ Biblioteca Python para sistemas a eventos discretos modelados por autômatos: op
 
 ## Requisitos
 
-- Python 3.10 ou superior.
+- Python 3.8 ou superior.
 - Para gerar PDFs: Graphviz e uma distribuição LaTeX com pdfLaTeX, Beamer, PGF/TikZ e Latin Modern.
 
 Os cálculos não precisam dos programas de desenho. As dependências Python são instaladas automaticamente pelo pip. Não é necessário Docker.
