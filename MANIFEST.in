@@ -1,0 +1,12 @@
+include README.md pyproject.toml setup.py
+recursive-include deslab *.py
+prune alan-docs
+prune tests
+prune tools
+prune build
+prune .deslab-build
+prune programas
+prune tutoriais
+prune deslab/graphics/output
+prune deslab/graphics/texfiles
+global-exclude __pycache__ *.py[cod]

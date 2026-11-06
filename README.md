@@ -1,77 +1,119 @@
-# DESlab Installation Guide
+# DESLab
 
-Welcome to the DESlab installation guide! Follow the steps below to ensure proper installation and configuration.
+Biblioteca Python para sistemas a eventos discretos modelados por autômatos: operações de linguagens, controle supervisório, diagnóstico, opacidade e intervalos temporais.
 
----
+## Requisitos
 
-## **Prerequisites**
+- Python 3.10 ou superior.
+- Para gerar PDFs: Graphviz e uma distribuição LaTeX com pdfLaTeX, Beamer, PGF/TikZ e Latin Modern.
 
-Before installing DESlab, make sure to complete the following steps:
+Os cálculos não precisam dos programas de desenho. As dependências Python são instaladas automaticamente pelo pip. Não é necessário Docker.
 
-1. **Install a LaTeX Distribution**  
-   - Recommended: [TeXlive](https://www.tug.org/texlive/acquire.html) (also included in the `programas` folder of the DESlab package).  
-   - Other distributions, such as MikTeX, should also work but may not have been fully tested.  
+## macOS
 
-2. **Configure TeXlive Path**  
-   - Add the path of `pdflatex.exe` from TeXlive (e.g., `C:\...\Texlive\2017\bin\win32`) to the Windows Environment Variables. See the tutorial below.
+Instale o [Python](https://www.python.org/downloads/macos/) e o [Homebrew](https://brew.sh/) caso ainda não estejam disponíveis. Depois:
 
-3. **Install Python 3.12**  
-   - Recommended: Use the Python 3.12 installer included in the `programas` folder of the DESlab package.  
-   - **Important:** During installation, ensure the checkbox to add Python to the Windows Environment Variables is selected.
+```sh
+brew install graphviz
+brew install --cask basictex
+```
 
-4. **Remove Older Python Versions (if applicable)**  
-   - If an older version of Python is installed, remove its path from the Windows Environment Variables and add the path of Python 3.12 instead. See the tutorial below.
+Feche e reabra o terminal para disponibilizar os comandos do BasicTeX. Instale os pacotes usados nos desenhos:
 
----
+```sh
+sudo tlmgr update --self
+sudo tlmgr install beamer pgf lm
+```
 
-## **Configuring Windows Environment Variables**
+Confira os programas:
 
-Follow these steps to configure environment variables:
+```sh
+python3 --version
+dot -V
+pdflatex --version
+```
 
-1. Open the **System Properties** window:  
-   - Go to **Control Panel**, select **System**, and click **Advanced System Settings**.  
-   - In the **Advanced** tab, click **Environment Variables**.
+## Linux (Ubuntu e Debian)
 
-2. Edit the `PATH` variable in **System Variables**:  
-   - Click `Edit` and look for paths separated by `;` (semicolon).  
-   - Remove the path for any older Python versions.  
-   - Add the path for Python 3.12 (e.g., `C:/.../Python/Python312/`).
+```sh
+sudo apt update
+sudo apt install python3 python3-pip python3-venv graphviz texlive-latex-extra texlive-fonts-recommended lmodern
+```
 
-   **Examples**:  
-   - ✅ Correct: `C:/.../Python/Python312/`  
-   - ❌ Incorrect: `C:/.../Python/Python312/python.exe`
+Confira os programas:
 
----
+```sh
+python3 --version
+dot -V
+pdflatex --version
+```
 
-## **Installing DESlab**
+Em outras distribuições, instale os pacotes equivalentes usando o gerenciador do sistema.
 
-1. Run the `Install.bat` script located in the `DESlab` folder.  
-   This script will install the following software and dependencies:  
-   - **Graphviz** (version 2.28)  
-   - **FaDo** (version 2.2.0)  
-   - **Future** (version 1.0.0)  
-   - **Networkx** (version 2.8.8)  
-   - **Pyparsing** (version 3.1.4)  
-   - **Pydot** (version 3.0.1)  
-   - **DESlab**
+## Windows
 
-2. Verify the Graphviz Path:  
-   - Ensure the path to Graphviz (e.g., `...Graphviz\bin`) is added to the Windows Environment Variables.
+Instale o [Python](https://www.python.org/downloads/windows/), o [Graphviz](https://graphviz.org/download/) e o [MiKTeX](https://miktex.org/download). Nas opções dos instaladores, habilite a disponibilização dos comandos no PATH. No MiKTeX Console, instale `beamer`, `pgf` e `lm`, ou habilite a instalação dos pacotes ausentes.
 
----
+Abra um novo terminal e confira:
 
-## **Testing the Installation**
+```bat
+python --version
+dot -V
+pdflatex --version
+```
 
-1. Open Python IDLE and run the following commands to verify the installation:
+## Instalar a biblioteca
 
-   ```python
-   from deslab import *
-   syms('q1 q2 q3 a1 b1 e f')
-   table = [(a1,'a_1'),(b1,'b_1'),(q1,'q_1'),(q2,'q_2'),(q3,'q_3')]
-   X = [q1, q2, q3]
-   Sigma = [a1, b1, e]
-   X0 = [q1]
-   Xm = [q3]
-   T = [(q1, b1, q2), (q2, b1, q3), (q3, e, q3)]
-   G1 = fsa(X, Sigma, T, X0, Xm, table, name='$G_1$')
-   draw(G1)
+Na pasta deste repositório, crie um ambiente virtual. No macOS ou Linux:
+
+```sh
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install .
+```
+
+No Windows, usando o Prompt de Comando:
+
+```bat
+python -m venv .venv
+.venv\Scripts\activate.bat
+python -m pip install .
+```
+
+Se já usa um ambiente Python ou notebook, instale o DESLab nesse ambiente. O ambiente virtual apenas isola dependências; a biblioteca continua sendo usada por `import`.
+
+Com o ambiente ativo, `sh Install.sh` (macOS/Linux) ou `Install.bat` (Windows) são alternativas para instalar o pacote. Esses scripts instalam as dependências Python; os programas de desenho seguem as instruções acima.
+
+Se receber um wheel pronto, instale-o no lugar do checkout:
+
+```sh
+python -m pip install /caminho/para/deslab-0.0.5.dev0-py3-none-any.whl
+```
+
+Não é necessário clonar o repositório para usar um wheel. Esta versão de desenvolvimento ainda não foi publicada por esta alteração.
+
+## Usar
+
+```python
+from deslab import fsa, draw
+
+G = fsa(
+    ['q0', 'q1'], ['a'], [('q0', 'a', 'q1')],
+    ['q0'], ['q1'], name='Exemplo',
+)
+
+pdf = draw(G, 'figure', output='resultados/exemplo.pdf', show=False)
+print(pdf)
+```
+
+`show=False` salva o PDF sem abrir um aplicativo. O padrão `show=True` usa o visualizador do sistema. O resultado permanece no destino escolhido; os arquivos intermediários usam uma pasta temporária. Caminhos com espaços são aceitos.
+
+Continuam disponíveis `from deslab import *`, os estilos `figure`, `figurecolor` e `beamer`, e a opção `save_file=True` para salvar também `Figure.tex` na pasta atual. O desenho usa Graphviz, o conversor TikZ existente e pdfLaTeX, preservando a saída vetorial.
+
+## Problemas comuns
+
+- **`dot` ou `pdflatex` não encontrado:** confirme a instalação e abra um novo terminal. O comando correspondente precisa funcionar nesse terminal antes de iniciar o Python ou notebook.
+- **Pacote LaTeX ausente:** instale os pacotes indicados acima; a mensagem de erro inclui o trecho final do log do compilador.
+- **Sem interface gráfica:** use `draw(..., show=False)`.
+
+Esta alteração cuida de instalação, caminhos e integração entre sistemas. Ela não representa uma revisão matemática dos algoritmos científicos.
