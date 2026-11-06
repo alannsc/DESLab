@@ -6,7 +6,7 @@ Biblioteca Python para sistemas a eventos discretos modelados por autômatos, co
 
 Use Python 3.8 ou superior. Instale a partir da pasta do repositório.
 
-No Windows, você pode usar o [instalador do Python 3.12](programas/python-3.12.0-amd64.exe) disponível em `programas`. Marque **Add Python to PATH** durante a instalação e abra um novo terminal. Depois, execute na pasta do repositório:
+No Windows, você pode usar o [instalador do Python 3.12](programas/python-3.12.0-amd64.exe) disponível em `programas`. Marque **Add Python to PATH** durante a instalação e abra um novo terminal. Se o comando `python` não for reconhecido, veja [como configurar o PATH](#configurar-o-path-no-windows). Depois, execute na pasta do repositório:
 
 ```bat
 python -m pip install .
@@ -71,8 +71,7 @@ Use os instaladores que já estão na pasta `programas`:
 
 1. Instale o [Graphviz 2.28](programas/graphviz-2.28.0.msi).
 2. Instale o [TeX Live](programas/TEXLIVE-install-tl-windows.exe), mantendo a seleção completa de pacotes do instalador.
-3. Em **Configurações avançadas do sistema → Variáveis de Ambiente**, edite o **Path** do seu usuário. Adicione a pasta `bin` do Graphviz, que contém `dot.exe`, e a pasta do TeX Live que contém `pdflatex.exe`. Adicione as pastas, sem o nome dos executáveis.
-4. Feche e reabra o terminal.
+3. Siga as instruções de [configuração do PATH](#configurar-o-path-no-windows) para adicionar as pastas do Graphviz e do TeX Live.
 
 ### macOS
 
@@ -105,3 +104,31 @@ Em qualquer sistema, confira se os dois comandos estão disponíveis:
 dot -V
 pdflatex --version
 ```
+
+## Configurar o PATH no Windows
+
+O PATH permite executar os programas pelo nome no terminal, sem informar o caminho completo.
+
+1. Abra o **Painel de Controle → Sistema → Configurações avançadas do sistema**.
+2. Na aba **Avançado**, clique em **Variáveis de Ambiente**.
+3. Em **Variáveis de usuário**, selecione **Path** e clique em **Editar**.
+4. Clique em **Novo** e adicione a pasta de cada programa necessário, uma por entrada, preservando as entradas existentes:
+
+| Programa | Pasta a adicionar |
+| --- | --- |
+| Python | A pasta que contém `python.exe`, por exemplo, `C:\Users\SeuUsuario\AppData\Local\Programs\Python\Python312\`. |
+| Graphviz | A pasta `bin` que contém `dot.exe`, por exemplo, `C:\Program Files (x86)\Graphviz2.28\bin\`. |
+| TeX Live | A pasta que contém `pdflatex.exe`, dentro de `C:\texlive\<ano>\bin\`. Dependendo da versão instalada, a subpasta pode se chamar `windows` ou `win32`. |
+
+Os caminhos variam conforme a instalação. Adicione a **pasta**, sem o nome do executável: `C:\...\Python312\`, e não `C:\...\Python312\python.exe`.
+
+Para gerar PDFs, configure também o Graphviz e o TeX Live.
+
+Confirme as janelas com **OK** e feche e reabra o terminal ou o programa em que executa seus scripts. Confira o Python selecionado:
+
+```bat
+python --version
+where python
+```
+
+Se houver mais de uma versão do Python no PATH, coloque a pasta da versão que deseja usar antes das outras entradas de Python.
