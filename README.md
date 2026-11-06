@@ -6,16 +6,16 @@ Biblioteca Python para sistemas a eventos discretos modelados por autômatos, co
 
 Use Python 3.8 ou superior. Instale a partir da pasta do repositório.
 
-No macOS ou Linux:
-
-```sh
-python3 -m pip install .
-```
-
 No Windows, você pode usar o [instalador do Python 3.12](programas/python-3.12.0-amd64.exe) disponível em `programas`. Marque **Add Python to PATH** durante a instalação e abra um novo terminal. Depois, execute na pasta do repositório:
 
 ```bat
 python -m pip install .
+```
+
+No macOS ou Linux:
+
+```sh
+python3 -m pip install .
 ```
 
 Se recebeu um arquivo `.whl`, substitua `.` pelo caminho do arquivo nos comandos acima. Use o mesmo Python dos seus scripts ou notebooks. As dependências Python são instaladas automaticamente.
@@ -65,6 +65,15 @@ draw(G1, 'figurecolor', output='G1.pdf', show=False)
 
 ## Dependências para gerar PDFs
 
+### Windows
+
+Use os instaladores que já estão na pasta `programas`:
+
+1. Instale o [Graphviz 2.28](programas/graphviz-2.28.0.msi).
+2. Instale o [TeX Live](programas/TEXLIVE-install-tl-windows.exe), mantendo a seleção completa de pacotes do instalador.
+3. Em **Configurações avançadas do sistema → Variáveis de Ambiente**, edite o **Path** do seu usuário. Adicione a pasta `bin` do Graphviz, que contém `dot.exe`, e a pasta do TeX Live que contém `pdflatex.exe`. Adicione as pastas, sem o nome dos executáveis.
+4. Feche e reabra o terminal.
+
 ### macOS
 
 Com o [Homebrew](https://brew.sh/) instalado:
@@ -87,15 +96,6 @@ sudo tlmgr install beamer pgf lm
 sudo apt update
 sudo apt install graphviz texlive-latex-extra texlive-fonts-recommended lmodern
 ```
-
-### Windows
-
-Use os instaladores que já estão na pasta `programas`:
-
-1. Instale o [Graphviz 2.28](programas/graphviz-2.28.0.msi).
-2. Instale o [TeX Live](programas/TEXLIVE-install-tl-windows.exe), mantendo a seleção completa de pacotes do instalador.
-3. Em **Configurações avançadas do sistema → Variáveis de Ambiente**, edite o **Path** do seu usuário. Adicione a pasta `bin` do Graphviz, que contém `dot.exe`, e a pasta do TeX Live que contém `pdflatex.exe`. Adicione as pastas, sem o nome dos executáveis.
-4. Feche e reabra o terminal.
 
 ### Verificar a instalação
 
