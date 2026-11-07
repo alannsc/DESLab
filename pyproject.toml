@@ -3,7 +3,7 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "DESlab"
+name = "deslab-portable"
 dynamic = ["version"]
 description = "Discrete event systems modeled as automata"
 readme = "README.md"
@@ -27,11 +27,11 @@ dependencies = [
 include-package-data = false
 
 [tool.setuptools.packages.find]
-include = ["deslab", "deslab.*"]
+include = ["deslab_portable", "deslab_portable.*"]
 namespaces = false
 
 [tool.setuptools.dynamic]
-version = {attr = "deslab.version.__version__"}
+version = {attr = "deslab_portable.version.__version__"}
 
 [tool.setuptools.package-data]
-"deslab.graphics" = ["_tex_assets/*"]
+"deslab_portable.graphics" = ["_tex_assets/*"]
