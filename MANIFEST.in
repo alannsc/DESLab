@@ -1,6 +1,6 @@
 include README.md pyproject.toml setup.py
-recursive-include deslab *.py
-recursive-include deslab/graphics/_tex_assets *
+recursive-include deslab_portable *.py
+recursive-include deslab_portable/graphics/_tex_assets *
 prune alan-docs
 prune tests
 prune tools
@@ -8,6 +8,6 @@ prune build
 prune .deslab-build
 prune programas
 prune tutoriais
-prune deslab/graphics/output
-prune deslab/graphics/texfiles
+prune deslab_portable/graphics/output
+prune deslab_portable/graphics/texfiles
 global-exclude __pycache__ *.py[cod]

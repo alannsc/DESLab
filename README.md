@@ -1,6 +1,8 @@
-# DESLab
+# DESLab Portable
 
 A Python library for discrete event systems modeled as automata, with language operations, supervisory control, diagnosis, and opacity analysis.
+
+Evaluation build of the DESLab update. The temporary `deslab_portable` import lets you test it alongside `deslab` in the same Python installation.
 
 ## Installation
 
@@ -29,7 +31,7 @@ For Python 3.8, 3.9, or 3.10, follow [Compatibility with older Python versions a
 This example defines three states, three events, one initial state, and two marked states. The table maps states and events to the labels displayed in the drawing.
 
 ```python
-from deslab import *
+from deslab_portable import *
 
 syms('q1 q2 q3 a1 b1 e')
 
@@ -62,6 +64,17 @@ draw(G1, 'figurecolor', output='G1.pdf', show=False)
 ```
 
 `output` sets the PDF destination. By default, `draw()` opens the generated file. Available styles are `figure`, `figurecolor`, and `beamer`. Use `save_file=True` to also save the `Figure.tex` file.
+
+### Compare the two versions
+
+The packages use separate names, so you can import both:
+
+```python
+import deslab
+import deslab_portable
+```
+
+Build each version's models with its own `fsa()` constructor. To test an existing `.des` model, use `deslab_portable.load()`; it loads the model into the portable version.
 
 ## Compatibility with older Python versions and the previous setup
 
@@ -116,7 +129,7 @@ pdflatex --version
 Before drawing, enable native rendering. This call checks that `dot` and `pdflatex` are available on PATH:
 
 ```python
-from deslab import use_native_draw
+from deslab_portable import use_native_draw
 
 use_native_draw()
 draw(G1, 'figure', output='G1.pdf', show=False)
@@ -125,7 +138,7 @@ draw(G1, 'figure', output='G1.pdf', show=False)
 To return to default rendering on Python 3.11 or later:
 
 ```python
-from deslab import use_default_draw
+from deslab_portable import use_default_draw
 
 use_default_draw()
 ```
