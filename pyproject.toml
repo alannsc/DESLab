@@ -19,6 +19,8 @@ dependencies = [
   "portion>=2.5.0",
   "pydot>=3.0.1",
   "pyparsing>=3.1.4",
+  "wasi-graphviz[wasmtime]>=0.1.4; python_version >= '3.11'",
+  "wasmtime>=50.0.1,<51; python_version >= '3.11'",
 ]
 
 [tool.setuptools]
@@ -30,3 +32,6 @@ namespaces = false
 
 [tool.setuptools.dynamic]
 version = {attr = "deslab.version.__version__"}
+
+[tool.setuptools.package-data]
+"deslab.graphics" = ["_tex_assets/*"]
